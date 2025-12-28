@@ -1,0 +1,972 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>EDUVERSE - Education and Skill Development Portal</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f3f4f6;
+      color: #374151;
+    }
+    body.dark {
+      background-color: #1a202c;
+      color: #cbd5e1;
+    }
+    body.dark nav {
+      background-color: #2d3748;
+    }
+    .text-gradient {
+      background-image: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    #signupOverlay {
+      position: fixed;
+      inset: 0;
+      background: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+    #mainApp {
+      display: none;
+      padding: 1rem;
+    }
+    .form-radio {
+      accent-color:#4f46e5;
+    }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-900 transition-colors duration-300">
+
+  <!-- Signup Overlay -->
+  <div id="signupOverlay">
+    <h1 class="text-4xl font-bold mb-6 text-center">Welcome to EDUVERSE</h1>
+    <form id="signupForm" class="max-w-md w-full bg-white p-8 rounded-lg shadow-lg space-y-4 mx-auto" novalidate>
+      <h2 class="text-2xl font-semibold mb-4 text-center">Sign Up</h2>
+      <input type="text" id="signupName" placeholder="Your Name" class="w-full border border-gray-300 rounded px-3 py-2" required />
+      <input type="email" id="signupEmail" placeholder="Your Email" class="w-full border border-gray-300 rounded px-3 py-2" required />
+      <button type="submit" class="btn-primary w-full bg-indigo-600 text-white px-6 py-3 rounded-lg shadow hover:bg-indigo-700 font-semibold transition">Sign Up & Enter</button>
+    </form>
+  </div>
+
+  <!-- Main App -->
+  <div id="mainApp">
+
+    <!-- Navbar -->
+    <nav class="bg-white shadow sticky top-0 z-50">
+      <div class="max-w-7xl mx-auto flex items-center justify-between p-4">
+        <div class="flex items-center space-x-4">
+          <div class="text-2xl font-bold text-gradient select-none cursor-default">EDUVERSE</div>
+          <div class="hidden md:flex space-x-6 font-semibold text-gray-700">
+            <a href="#" id="nav-dashboard" class="hover:text-indigo-600">Dashboard</a>
+            <a href="#" id="nav-streams" class="hover:text-indigo-600">Streams</a>
+            <a href="#" id="nav-community" class="hover:text-indigo-600">Community</a>
+            <a href="#" id="nav-connect" class="hover:text-indigo-600">Connect Space</a>
+            <a href="#" id="nav-profile" class="hover:text-indigo-600">Profile</a>
+            <a href="#" id="nav-logout" class="hover:text-red-600">Logout</a>
+          </div>
+        </div>
+        <div class="flex items-center space-x-3">
+          <button id="mode-toggle" class="p-2 rounded hover:bg-gray-200" title="Toggle Light/Dark Mode">
+            <i id="mode-icon" class="fas fa-moon text-gray-700"></i>
+          </button>
+        </div>
+      </div>
+    </nav>
+
+    <main class="p-4 max-w-7xl mx-auto">
+
+      <!-- Dashboard Section -->
+      <section id="section-dashboard" class="hidden">
+        <!-- Dashboard content (summaries, charts, activities) -->
+        <div class="mb-8 text-center">
+          <h1 class="text-5xl font-bold text-gradient">Welcome Back, <span id="dashboardUsername">Student</span></h1>
+          <p class="text-gray-600 dark:text-gray-300 mt-2">Here's your learning summary</p>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+          <div class="bg-indigo-600 text-white rounded-lg p-6 shadow-lg">
+            <div class="flex items-center mb-2 space-x-3">
+              <i class="fas fa-book-open text-3xl"></i>
+              <h2 class="text-2xl font-semibold">Courses</h2>
+            </div>
+            <p id="coursesCount" class="text-4xl font-bold">12</p>
+            <p>Total courses enrolled</p>
+          </div>
+          <div class="bg-green-600 text-white rounded-lg p-6 shadow-lg">
+            <div class="flex items-center mb-2 space-x-3">
+              <i class="fas fa-clipboard-check text-3xl"></i>
+              <h2 class="text-2xl font-semibold">Quizzes</h2>
+            </div>
+            <p id="quizzesCount" class="text-4xl font-bold">24</p>
+            <p>Quizzes completed</p>
+          </div>
+          <div class="bg-yellow-600 text-white rounded-lg p-6 shadow-lg">
+            <div class="flex items-center mb-2 space-x-3">
+              <i class="fas fa-comments text-3xl"></i>
+              <h2 class="text-2xl font-semibold">Community</h2>
+            </div>
+            <p id="communityPostsCount" class="text-4xl font-bold">34</p>
+            <p>Posts shared</p>
+          </div>
+          <div class="bg-purple-600 text-white rounded-lg p-6 shadow-lg">
+            <div class="flex items-center mb-2 space-x-3">
+              <i class="fas fa-chart-line text-3xl"></i>
+              <h2 class="text-2xl font-semibold">Skills</h2>
+            </div>
+            <p id="skillsCount" class="text-4xl font-bold">7</p>
+            <p>New skills unlocked</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-12">
+          <div class="bg-white rounded-lg p-6 shadow">
+            <h3 class="text-xl font-semibold mb-4">Study Progress (Weekly)</h3>
+            <canvas id="studyProgressChart" class="w-full h-64"></canvas>
+          </div>
+          <div class="bg-white rounded-lg p-6 shadow">
+            <h3 class="text-xl font-semibold mb-4">Skill Growth (Monthly)</h3>
+            <canvas id="skillGrowthChart" class="w-full h-64"></canvas>
+          </div>
+        </div>
+
+        <div class="max-w-4xl mx-auto bg-white p-6 rounded-lg shadow mb-16">
+          <h3 class="text-xl font-semibold mb-4">Recent Activity</h3>
+          <ul id="recentActivities" class="list-disc list-inside space-y-2"></ul>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-4 max-w-4xl mx-auto gap-6">
+          <button class="btn-primary py-3 px-4 rounded shadow text-white bg-indigo-600 hover:bg-indigo-700" onclick="showSection('section-streams')">Go to Streams</button>
+          <button class="btn-primary py-3 px-4 rounded shadow text-white bg-indigo-600 hover:bg-indigo-700" onclick="showSection('section-community')">Go to Community</button>
+          <button class="btn-primary py-3 px-4 rounded shadow text-white bg-indigo-600 hover:bg-indigo-700" onclick="showSection('section-connect')">Go to Connect Space</button>
+          <button class="btn-primary py-3 px-4 rounded shadow text-white bg-indigo-600 hover:bg-indigo-700" onclick="showSection('section-profile')">Go to Profile</button>
+        </div>
+      </section>
+      <!-- Streams Section -->
+     <section id="section-streams" class="hidden max-w-5xl mx-auto p-6">
+  <h2 class="text-4xl font-bold mb-6 text-center">Streams & Details</h2>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+    <div class="col-span-2 space-y-6">
+
+      <div class="flex gap-6 justify-center mb-8">
+        <button class="btn-primary rounded-lg px-6 py-3 flex items-center gap-2" onclick="selectStream('school')">
+          <img src="https://img.icons8.com/color/48/000000/school.png" alt="School" class="w-8 h-8" />
+          School Level
+        </button>
+        <button class="btn-primary rounded-lg px-6 py-3 flex items-center gap-2" onclick="selectStream('tech')">
+          <img src="https://img.icons8.com/color/48/000000/laptop.png" alt="Tech" class="w-8 h-8" />
+          Tech Level
+        </button>
+        <button class="btn-primary rounded-lg px-6 py-3 flex items-center gap-2" onclick="selectStream('cultural')">
+          <img src="https://img.icons8.com/color/48/000000/tree.png" alt="Culture" class="w-8 h-8" />
+          Cultural Learning
+        </button>
+      </div>
+
+      <div id="streamContent" class="bg-white rounded-lg p-6 shadow max-h-[68vh] overflow-y-auto">
+
+        <div id="defaultIntro" class="text-center text-gray-600 italic">
+          Select a stream category above to explore subjects, topics, and quizzes.
+        </div>
+
+        <div id="subjectsList" class="hidden grid grid-cols-1 md:grid-cols-2 gap-6"></div>
+
+        <div id="detailsArea" class="hidden mt-6 p-4 border rounded shadow max-h-[40vh] overflow-y-auto bg-gray-50">
+          <h3 class="text-xl font-bold mb-3" id="detailsTitle"></h3>
+          <div id="topicsList" class="mb-4"></div>
+          <div id="quizArea" class="mt-4">
+            <h4 class="font-semibold mb-2">Quiz Question:</h4>
+            <p id="quizQuestion" class="mb-2"></p>
+            <input type="text" id="quizAnswerInput" class="border p-2 rounded w-full" placeholder="Type your answer here" />
+            <button id="quizSubmitBtn" class="mt-2 px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700">Submit</button>
+            <p id="quizFeedback" class="mt-2 font-semibold"></p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="bg-white rounded-lg p-6 shadow flex flex-col max-h-[68vh]">
+      <h3 class="font-bold text-xl mb-4 border-b pb-2">Chatbot Help</h3>
+      <div id="chatOutput" class="flex-grow overflow-y-auto border rounded p-4 mb-4 text-gray-700"></div>
+      <form id="chatForm" class="flex">
+        <input id="chatInput" class="flex-grow border border-gray-300 rounded px-3 py-2" type="text" placeholder="Ask me anything about learning..." />
+        <button type="submit" class="ml-2 bg-indigo-600 text-white px-4 py-2 rounded">Send</button>
+      </form>
+    </div>
+  </div>
+
+<script>
+const streams = {
+  school: {
+    subjects: [
+      {
+        name: "Mathematics",
+        image: "https://cdn-icons-png.flaticon.com/512/7284/7284962.png",
+        topics: ["Numbers", "Algebra", "Geometry", "Trigonometry", "Statistics"],
+        quiz: {
+          question: "What is the area of a circle of radius 7?",
+          answer: "154"
+        }
+      },
+      {
+        name: "English",
+        image: "https://cdn-icons-png.flaticon.com/512/1055/1055687.png",
+        topics: ["Grammar", "Literature", "Writing Skills", "Comprehension"],
+        quiz: {
+          question: "What is a noun?",
+          answer: "A person, place, or thing"
+        }
+      },
+      {
+        name: "Science",
+        image: "https://cdn-icons-png.flaticon.com/512/1276/1276763.png",
+        topics: ["Physics", "Chemistry", "Biology", "Environmental Science"],
+        quiz: {
+          question: "What is photosynthesis?",
+          answer: "Process by which green plants make food"
+        }
+      },
+      {
+        name: "Social Studies",
+        image: "https://cdn-icons-png.flaticon.com/512/2292/2292460.png",
+        topics: ["History", "Geography", "Civics"],
+        quiz: {
+          question: "Who was the first president of India?",
+          answer: "Rajendra Prasad"
+        }
+      }
+    ]
+  },
+  tech: {
+    courses: [
+      {
+        name: "Computer Science Engineering",
+        image: "https://cdn-icons-png.flaticon.com/512/2740/2740488.png",
+        topics: ["Algorithms", "Data Structures", "Operating Systems", "AI", "Networking"],
+        quiz: {
+          question: "What is a binary search?",
+          answer: "An efficient algorithm for finding an item from a sorted list"
+        }
+      },
+      {
+        name: "Mechanical Engineering",
+        image: "https://cdn-icons-png.flaticon.com/512/6682/6682631.png",
+        topics: ["Thermodynamics", "Fluid Mechanics", "Machine Design"],
+        quiz: {
+          question: "What is thermodynamics?",
+          answer: "Study of heat and temperature"
+        }
+      },
+      {
+        name: "Electronics and Communication Engineering",
+        image: "https://cdn-icons-png.flaticon.com/512/2965/2965573.png",
+        topics: ["Circuits", "Signals and Systems", "Microprocessors"],
+        quiz: {
+          question: "What is Ohm's law?",
+          answer: "V=IR"
+        }
+      },
+      {
+        name: "Electrical Engineering",
+        image: "https://cdn-icons-png.flaticon.com/512/1323/1323310.png",
+        topics: ["Power Systems", "Control Systems", "Renewable Energy"],
+        quiz: {
+          question: "Define renewable energy.",
+          answer: "Energy from resources that are naturally replenished"
+        }
+      }
+    ]
+  },
+  cultural: {
+    info: "<p>Cultural learning promotes Indian art forms, music, dance, and regional languages, fostering creativity and heritage awareness.</p>",
+    areas: [
+      {
+        name: "Indian Art",
+        description: "Explore Madhubani, Warli, Tanjore paintings, their history and modern adaptations.",
+        image: "https://cdn-icons-png.flaticon.com/512/3289/3289567.png",
+        quiz: {
+          question: "Name an ancient Indian folk art style.",
+          answer: "Madhubani"
+        }
+      },
+      {
+        name: "Music and Dance",
+        description: "Learn about classical ragas, folk music, and popular regional dances like Bharatanatyam.",
+        image: "https://cdn-icons-png.flaticon.com/512/2135/2135852.png",
+        quiz: {
+          question: "Name a classical Indian dance form.",
+          answer: "Bharatanatyam"
+        }
+      },
+      {
+        name: "Regional Languages",
+        description: "Basic conversational phrases in Hindi, Tamil, Bengali, Marathi, Telugu.",
+        image: "https://cdn-icons-png.flaticon.com/512/1976/1976036.png",
+        quiz: {
+          question: "What is 'Hello' in Hindi?",
+          answer: "Namaste"
+        }
+      }
+    ]
+  }
+};
+
+const defaultIntro = document.getElementById('defaultIntro');
+const subjectsList = document.getElementById('subjectsList');
+const detailsArea = document.getElementById('detailsArea');
+const detailsTitle = document.getElementById('detailsTitle');
+const topicsList = document.getElementById('topicsList');
+const quizQuestion = document.getElementById('quizQuestion');
+const quizAnswerInput = document.getElementById('quizAnswerInput');
+const quizSubmitBtn = document.getElementById('quizSubmitBtn');
+const quizFeedback = document.getElementById('quizFeedback');
+
+function clearDetails() {
+  detailsTitle.textContent = '';
+  topicsList.innerHTML = '';
+  quizQuestion.textContent = '';
+  quizAnswerInput.value = '';
+  quizFeedback.textContent = '';
+}
+
+function selectStream(stream) {
+  clearDetails();
+  defaultIntro.style.display = 'none';
+  subjectsList.innerHTML = '';
+  detailsArea.style.display = 'none';
+
+  if (stream === 'school') {
+    streams.school.subjects.forEach(subj => {
+      const div = document.createElement('div');
+      div.className = 'border p-4 rounded-lg bg-white shadow hover:shadow-lg transition cursor-pointer flex gap-3 items-center';
+      div.innerHTML = `<img src="${subj.image}" class="w-12 h-12 object-contain" alt="${subj.name} icon"><span>${subj.name}</span>`;
+      div.onclick = () => showSubjectDetails(subj);
+      subjectsList.appendChild(div);
+    });
+    subjectsList.classList.remove('hidden');
+  } else if (stream === 'tech') {
+    streams.tech.courses.forEach(course => {
+      const div = document.createElement('div');
+      div.className = 'border p-4 rounded-lg bg-white shadow hover:shadow-lg transition cursor-pointer flex gap-3 items-center';
+      div.innerHTML = `<img src="${course.image}" class="w-12 h-12 object-contain" alt="${course.name} icon"><span>${course.name}</span>`;
+      div.onclick = () => showCourseDetails(course);
+      subjectsList.appendChild(div);
+    });
+    subjectsList.classList.remove('hidden');
+  } else if (stream === 'cultural') {
+    subjectsList.classList.add('hidden');
+    detailsArea.style.display = 'block';
+    detailsTitle.textContent = 'Indian Culture';
+    let html = streams.cultural.info;
+    streams.cultural.areas.forEach(area => {
+      html += `<div class="border p-4 rounded shadow mb-4 bg-white flex gap-3 items-start">
+        <img src="${area.image}" class="w-20 h-20 object-contain rounded" alt="${area.name} icon" />
+        <div>
+          <h4 class="text-lg font-semibold mb-2">${area.name}</h4>
+          <p>${area.description}</p>
+          <button class="mt-2 px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700" onclick="startQuiz('${area.name}')">Start Quiz</button>
+        </div>
+      </div>`;
+    });
+    topicsList.innerHTML = html;
+  }
+}
+
+function showSubjectDetails(subj) {
+  detailsArea.style.display = 'block';
+  detailsTitle.textContent = subj.name;
+  topicsList.innerHTML = '<ul class="list-disc pl-5 mb-4">' + subj.topics.map(t => `<li>${t}</li>`).join('') + '</ul>';
+  displayQuiz(subj.quiz);
+}
+
+function showCourseDetails(course) {
+  detailsArea.style.display = 'block';
+  detailsTitle.textContent = course.name;
+  topicsList.innerHTML = '<ul class="list-disc pl-5 mb-4">' + course.topics.map(t => `<li>${t}</li>`).join('') + '</ul>';
+  displayQuiz(course.quiz);
+}
+
+function displayQuiz(quiz) {
+  quizQuestion.textContent = quiz.question;
+  quizAnswerInput.value = '';
+  quizFeedback.textContent = '';
+  quizSubmitBtn.onclick = () => {
+    const ans = quizAnswerInput.value.trim().toLowerCase();
+    if (!ans) {
+      quizFeedback.textContent = 'Please enter an answer.';
+      quizFeedback.className = 'text-red-600 font-semibold';
+      return;
+    }
+    if (ans === quiz.answer.toLowerCase()) {
+      quizFeedback.textContent = 'Correct! Well done.';
+      quizFeedback.className = 'text-green-600 font-semibold';
+    } else {
+      quizFeedback.textContent = `Incorrect. The correct answer is: ${quiz.answer}.`;
+      quizFeedback.className = 'text-red-600 font-semibold';
+    }
+  };
+}
+
+function startQuiz(name) {
+  alert("Starting quiz for " + name + "... (feature coming soon!)");
+}
+
+// Chatbot code
+const chatForm = document.getElementById('chatForm');
+const chatInput = document.getElementById('chatInput');
+const chatOutput = document.getElementById('chatOutput');
+
+chatForm.addEventListener('submit', e => {
+  e.preventDefault();
+  const userText = chatInput.value.trim();
+  if (!userText) return;
+  appendChatMessage('You', userText);
+  chatInput.value = '';
+  chatOutput.scrollTop = chatOutput.scrollHeight;
+  setTimeout(() => {
+    const response = generateResponse(userText);
+    appendChatMessage('EduBot', response);
+    chatOutput.scrollTop = chatOutput.scrollHeight;
+  }, 800);
+});
+
+function appendChatMessage(sender, message) {
+  const div = document.createElement('div');
+  div.className = sender === 'You' ? 'text-right mb-2' : 'text-left mb-2';
+  div.innerHTML = `<strong>${sender}:</strong> ${message}`;
+  chatOutput.appendChild(div);
+}
+
+function generateResponse(input) {
+  input = input.toLowerCase();
+  if (input.includes('hello') || input.includes('hi')) return "Hello! How can I help with your learning today?";
+  if (input.includes('school')) return "The school stream covers grades 1 to 10 with subjects like Mathematics and Science.";
+  if (input.includes('tech')) return "Tech streams include Computer Science, Mechanical Engineering, ECE and more.";
+  if (input.includes('culture') || input.includes('music')) return "Explore Indian arts, music, and languages in the Cultural Learning stream.";
+  return "Feel free to ask me about any stream or learning topic and I'll assist!";
+}
+</script>
+</section>
+
+
+      <!-- Community Section -->
+      <section id="section-community" class="hidden max-w-5xl mx-auto p-6">
+        <h2 class="text-4xl font-bold mb-6 text-center">Community</h2>
+        <div class="bg-white p-6 rounded-lg shadow max-h-[40rem] overflow-y-auto flex flex-col">
+          <div id="communityMessages" class="flex-grow space-y-4 overflow-auto"></div>
+          <form id="communityForm" class="flex mt-4">
+            <input type="text" id="communityInput" class="flex-grow border rounded p-2" placeholder="Write a message..." required />
+            <button type="submit" class="ml-4 bg-indigo-600 text-white px-4 rounded shadow hover:bg-indigo-700 transition">Send</button>
+          </form>
+        </div>
+      </section>
+      
+      <script>
+        // Ensure DOM elements exist before usage
+        document.addEventListener('DOMContentLoaded', () => {
+      
+          const communityMessagesData = [
+            {user: "Priya", message: "Does anyone have tips for mastering algebra?", time: "10:15 AM"},
+            {user: "Rajesh", message: "Try to practice daily and understand the underlying concepts.", time: "10:18 AM"},
+            {user: "Sneha", message: "Join our weekly group study sessions on Fridays!", time: "10:22 AM"},
+            {user: "Arjun", message: "Here's a good video explaining geometry basics: https://youtu.be/example", time: "10:30 AM"},
+            {user: "Karan", message: "Can someone help me with the JavaScript event loop?", time: "11:05 AM"},
+            {user: "Mira", message: "Practice visualizing asynchronous code using diagrams.", time: "11:10 AM"},
+            {user: "Nina", message: "What is the best resource for learning React hooks?", time: "11:22 AM"},
+            {user: "Ravi", message: "I recommend the official React docs and a couple of Udemy courses.", time: "11:30 AM"},
+            {user: "Anita", message: "Anyone interested in AI/ML projects? Looking for collaborators.", time: "12:05 PM"},
+            {user: "Suresh", message: "Yes! I have some ideas for beginner projects.", time: "12:10 PM"},
+            {user: "Meera", message: "Can someone explain TCP/IP basics for networking?", time: "12:22 PM"},
+            {user: "Vikram", message: "Check out tutorials on Network Fundamentals on Cisco Packet Tracer.", time: "12:30 PM"},
+            {user: "Leena", message: "Any advice on preparing for the data structures exam?", time: "12:45 PM"},
+            {user: "Anil", message: "Speed up your prep by solving past year question papers.", time: "12:50 PM"},
+            {user: "Tanya", message: "How do you approach debugging recursive functions?", time: "1:00 PM"}
+          ];
+      
+          const communityContainer = document.getElementById('communityMessages');
+          const communityForm = document.getElementById('communityForm');
+          const communityInput = document.getElementById('communityInput');
+      
+          function createMessageElement(user, message, time) {
+            const div = document.createElement('div');
+            div.className = 'flex items-start space-x-3';
+      
+            const avatar = document.createElement('div');
+            avatar.className = 'w-10 h-10 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold uppercase select-none';
+            avatar.textContent = user[0];
+      
+            const content = document.createElement('div');
+            content.className = 'bg-gray-100 p-3 rounded-lg shadow max-w-xl whitespace-pre-wrap break-words';
+      
+            const header = document.createElement('div');
+            header.className = 'flex justify-between text-sm font-semibold mb-1';
+            const username = document.createElement('span');
+            username.textContent = user;
+            const timestamp = document.createElement('span');
+            timestamp.className = 'text-gray-500 text-xs';
+            timestamp.textContent = time;
+      
+            header.appendChild(username);
+            header.appendChild(timestamp);
+      
+            const messageText = document.createElement('p');
+            messageText.textContent = message;
+      
+            content.appendChild(header);
+            content.appendChild(messageText);
+            div.appendChild(avatar);
+            div.appendChild(content);
+            return div;
+          }
+      
+          function renderCommunityMessages() {
+            communityContainer.innerHTML = '';
+            communityMessagesData.forEach(({user, message, time}) => {
+              communityContainer.appendChild(createMessageElement(user, message, time));
+            });
+          }
+      
+          renderCommunityMessages();
+      
+          communityForm.addEventListener('submit', e => {
+            e.preventDefault();
+            if (!communityInput.value.trim()) return;
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
+            const newMsg = createMessageElement('You', communityInput.value.trim(), timeStr);
+            communityContainer.appendChild(newMsg);
+            communityInput.value = '';
+            communityContainer.scrollTop = communityContainer.scrollHeight;
+          });
+      
+        });
+      </script>
+      
+      <!-- Connect Space Section -->
+      <section id="section-connect" class="hidden max-w-5xl mx-auto p-6">
+        <h2 class="text-4xl font-bold mb-6 text-center">Connect Space</h2>
+      
+        <div class="mb-6 flex flex-col md:flex-row gap-4 justify-center">
+          <input type="text" id="userFilterName" placeholder="Filter by name" class="border rounded p-2 flex-grow max-w-md" />
+          <select id="userFilterSkill" class="border rounded p-2 max-w-xs">
+            <option value="">All Professions</option>
+            <option value="Software Developer">Software Developer</option>
+            <option value="Python Developer">Python Developer</option>
+            <option value="Pen Tester">Pen Tester</option>
+            <option value="Graphic Designer">Graphic Designer</option>
+            <option value="Security Analyst">Security Analyst</option>
+            <option value="Data Scientist">Data Scientist</option>
+            <option value="UX Designer">UX Designer</option>
+            <option value="DevOps Engineer">DevOps Engineer</option>
+            <option value="Mobile Developer">Mobile Developer</option>
+            <option value="Artist">Artist</option>
+          </select>
+          <select id="userFilterRegion" class="border rounded p-2 max-w-xs">
+            <option value="">All Regions</option>
+            <option value="North">North</option>
+            <option value="South">South</option>
+            <option value="East">East</option>
+            <option value="West">West</option>
+            <option value="Central">Central</option>
+          </select>
+        </div>
+      
+        <div id="usersList" class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto"></div>
+      
+        <hr class="my-8" />
+      
+        <section id="culturalExplorer" class="bg-yellow-50 p-6 rounded-lg max-w-4xl mx-auto">
+          <h3 class="text-3xl font-bold mb-6 text-center">Cultural Explorer</h3>
+      
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div class="border rounded-lg p-4 bg-white shadow hover:shadow-lg transition">
+              <h4 class="text-xl font-semibold mb-3">Indian Traditional Art</h4>
+              <img src="https://cdn-icons-png.flaticon.com/512/3289/3289567.png" alt="Indian art" class="w-full h-40 object-contain mb-3 rounded" />
+              <p>Explore the rich traditional art forms of India such as Madhubani, Warli, and Tanjore painting. Learn about techniques, cultural significance, and modern adaptations through interactive courses and videos.</p>
+              <button class="mt-3 px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700">Explore Art</button>
+            </div>
+      
+            <div class="border rounded-lg p-4 bg-white shadow hover:shadow-lg transition">
+              <h4 class="text-xl font-semibold mb-3">Classical & Folk Music</h4>
+              <img src="https://cdn-icons-png.flaticon.com/512/2135/2135852.png" alt="Music" class="w-full h-40 object-contain mb-3 rounded" />
+              <p>Dive into Indian classical music traditions and folk tunes from different regions. This includes learning about different instruments, styles, and famous artists through audio libraries and expert workshops.</p>
+              <button class="mt-3 px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700">Discover Music</button>
+            </div>
+      
+            <div class="border rounded-lg p-4 bg-white shadow hover:shadow-lg transition">
+              <h4 class="text-xl font-semibold mb-3">Regional Languages</h4>
+              <img src="https://cdn-icons-png.flaticon.com/512/1976/1976036.png" alt="Languages" class="w-full h-40 object-contain mb-3 rounded" />
+              <p>Engage in learning sessions for many Indian regional languages including Hindi, Tamil, Bengali, Marathi, and Telugu. Each course covers basic vocabulary, conversational phrases, and cultural context.</p>
+              <button class="mt-3 px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700">Learn Languages</button>
+            </div>
+      
+            <div class="border rounded-lg p-4 bg-white shadow hover:shadow-lg transition">
+              <h4 class="text-xl font-semibold mb-3">Cultural Festivals & Traditions</h4>
+              <img src="https://cdn-icons-png.flaticon.com/512/3286/3286910.png" alt="Festivals" class="w-full h-40 object-contain mb-3 rounded" />
+              <p>Discover India's vibrant festivals, rituals, and customs. Learn about the history and significance of each festival and how they are celebrated across diverse communities.</p>
+              <button class="mt-3 px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700">Explore Festivals</button>
+            </div>
+          </div>
+      
+          <p class="text-center mt-6 text-lg font-semibold">
+            Join our community to share your experiences and make cultural exploration an enriching journey!
+          </p>
+        </section>
+      
+      <script>
+        const users = [
+          {name: 'Alice Johnson', profession: 'Software Developer', region: 'North', email: 'alice@example.com', bio: 'Full-stack engineer with 5 years of experience.'},
+          {name: 'Bob Lee', profession: 'Python Developer', region: 'South', email: 'bob@example.com', bio: 'Data scientist and AI enthusiast.'},
+          {name: 'Cara Singh', profession: 'Pen Tester', region: 'East', email: 'cara@example.com', bio: 'Certified ethical hacker.'},
+          {name: 'David Brown', profession: 'Arts', region: 'West', email: 'david@example.com', bio: 'Digital artist and illustrator.'},
+          {name: 'Eva White', profession: 'Software Developer', region: 'South', email: 'eva@example.com', bio: 'Backend systems developer.'},
+          {name: 'Frank Green', profession: 'Python Developer', region: 'North', email: 'frank@example.com', bio: 'Machine learning researcher.'},
+          {name: 'Grace Kim', profession: 'UX Designer', region: 'East', email: 'grace@example.com', bio: 'Focused on accessible and user-friendly interfaces.'},
+          {name: 'Harry Smith', profession: 'DevOps Engineer', region: 'West', email: 'harry@example.com', bio: 'AWS certified cloud infrastructure expert.'},
+          {name: 'Ivy Chen', profession: 'Mobile Developer', region: 'Central', email: 'ivy@example.com', bio: 'React Native and Flutter specialist.'},
+          {name: 'Jack Wilson', profession: 'Data Scientist', region: 'North', email: 'jack@example.com', bio: 'Passionate about big data and analytics.'}
+        ];
+      
+        const userList = document.getElementById('usersList');
+        const filterNameInput = document.getElementById('userFilterName');
+        const filterProfessionInput = document.getElementById('userFilterSkill');
+        const filterRegionInput = document.getElementById('userFilterRegion');
+      
+        function renderUsers() {
+          userList.innerHTML = '';
+          const nameFilter = filterNameInput.value.toLowerCase();
+          const professionFilter = filterProfessionInput.value;
+          const regionFilter = filterRegionInput.value;
+      
+          const filteredUsers = users.filter(user => {
+            return user.name.toLowerCase().includes(nameFilter)
+               && (professionFilter === '' || user.profession === professionFilter)
+               && (regionFilter === '' || user.region === regionFilter);
+          });
+      
+          if(filteredUsers.length === 0){
+            userList.innerHTML = '<p class="col-span-full text-center text-gray-500 italic">No users found.</p>';
+            return;
+          }
+      
+          filteredUsers.forEach(user => {
+            const card = document.createElement('div');
+            card.className = 'bg-white p-4 rounded shadow cursor-pointer hover:shadow-lg transition';
+            card.innerHTML = `
+              <h4 class="font-semibold mb-1">${user.name}</h4>
+              <p class="text-sm"><strong>Profession:</strong> ${user.profession}</p>
+              <p class="text-sm"><strong>Region:</strong> ${user.region}</p>
+              <p class="mt-1 text-gray-700">${user.bio}</p>
+              <p class="mt-2 text-blue-600 underline cursor-pointer">${user.email}</p>
+            `;
+            userList.appendChild(card);
+          });
+        }
+      
+        filterNameInput.addEventListener('input', renderUsers);
+        filterProfessionInput.addEventListener('change', renderUsers);
+        filterRegionInput.addEventListener('change', renderUsers);
+      
+        renderUsers();
+      </script>
+      
+      <!-- Profile Section -->
+      <section id="section-profile" class="hidden max-w-5xl mx-auto p-6">
+        <h2 class="text-4xl font-bold mb-6 text-center">Profile</h2>
+        <form id="profileForm" class="bg-white p-8 rounded-lg shadow max-w-3xl mx-auto space-y-6">
+          <input type="text" id="profileName" placeholder="Name" class="border rounded p-2 w-full" />
+          <input type="email" id="profileEmail" placeholder="Email" class="border rounded p-2 w-full" />
+          <textarea id="profileBio" placeholder="Bio" class="border rounded p-2 w-full h-24"></textarea>
+          <button type="submit" class="bg-indigo-600 text-white px-6 py-3 rounded shadow w-full hover:bg-indigo-700">Save Profile</button>
+        </form>
+        <div class="mt-8 max-w-3xl mx-auto">
+          <h3 class="text-2xl mb-4">Progress</h3>
+          <canvas id="profileProgressChart" class="w-full h-48"></canvas>
+          <h3 class="text-2xl mb-4 mt-8">Certificates</h3>
+          <div id="certificatesList" class="space-y-4"></div>
+          <h3 class="text-2xl mb-4 mt-8">AI Suggestions</h3>
+          <p id="aiSuggestions" class="italic text-gray-600"></p>
+        </div>
+      </section>
+
+    </main>
+
+</div>
+
+<script>
+  const signupOverlay = document.getElementById('signupOverlay');
+  const mainApp = document.getElementById('mainApp');
+  const sections = ['section-dashboard', 'section-streams', 'section-community', 'section-connect', 'section-profile'];
+
+  function showSection(id) {
+    sections.forEach(s => {
+      const el = document.getElementById(s);
+      if (el) {
+        el.classList.toggle('hidden', s !== id);
+      }
+    });
+  }
+
+  document.getElementById('signupForm').addEventListener('submit', e => {
+    e.preventDefault();
+    signupOverlay.style.display = 'none';
+    mainApp.style.display = 'block';
+    document.getElementById('dashboardUsername').textContent = document.getElementById('signupName').value || 'Student';
+    showSection('section-dashboard');
+    loadProfile();
+  });
+
+  ['dashboard','streams','community','connect','profile'].forEach(name => {
+    document.getElementById('nav-' + name).addEventListener('click', e => {
+      e.preventDefault();
+      showSection('section-' + name);
+    });
+  });
+
+  document.getElementById('nav-logout').addEventListener('click', e => {
+    e.preventDefault();
+    mainApp.style.display = 'none';
+    signupOverlay.style.display = 'flex';
+    sections.forEach(s => {
+      const el = document.getElementById(s);
+      if (el) el.classList.add('hidden');
+    });
+  });
+
+  const modeToggleBtn = document.getElementById('mode-toggle');
+  const modeIcon = document.getElementById('mode-icon');
+  modeToggleBtn.onclick = () => {
+    document.body.classList.toggle('dark');
+    if (document.body.classList.contains('dark')) {
+      modeIcon.className = "fas fa-sun text-yellow-400";
+    } else {
+      modeIcon.className = "fas fa-moon text-gray-700";
+    }
+  };
+
+  document.getElementById('dashboardUsername').textContent = 'Student';
+  document.getElementById('coursesCount').textContent = 12;
+  document.getElementById('quizzesCount').textContent = 24;
+  document.getElementById('communityPostsCount').textContent = 34;
+  document.getElementById('skillsCount').textContent = 7;
+
+  const ctx1 = document.getElementById('studyProgressChart').getContext('2d');
+  const studyProgressChart = new Chart(ctx1, {
+    type: 'bar',
+    data: {
+      labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+      datasets: [
+        { label: 'Hours Studied', data: [2, 3, 1.5, 4, 3.5, 5, 2], backgroundColor: 'rgba(59,130,246,0.7)' }
+      ]
+    },
+    options: { scales: { y: { beginAtZero: true, max: 6 } } }
+  });
+
+  const ctx2 = document.getElementById('skillGrowthChart').getContext('2d');
+  const skillGrowthChart = new Chart(ctx2, {
+    type: 'line',
+    data: {
+      labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+      datasets: [
+        { label: 'Skills Gained', data: [1, 3, 2, 5], borderColor: 'rgba(139,92,246,1)', fill: false, tension: 0.4 }
+      ]
+    },
+    options: { responsive: true }
+  });
+
+  const recentActivities = [
+    'Completed Algebra quiz',
+    'Posted in Community: "Learning tips for trigonometry"',
+    'Unlocked new skill: Python Programming',
+    'Joined group study session'
+  ];
+
+  const recentActivitiesList = document.getElementById('recentActivities');
+  recentActivities.forEach(activity => {
+    const li = document.createElement('li');
+    li.textContent = activity;
+    recentActivitiesList.appendChild(li);
+  });
+
+  // Community messages setup
+  const communityMessagesData = [
+    { user: 'Priya', message: 'Does anyone have tips for mastering algebra?', time: '10:15 AM' },
+    { user: 'Rajesh', message: 'Try solving lots of problems and visualizing concepts.', time: '10:18 AM' },
+    { user: 'Sneha', message: 'Join the weekly group study session this Friday!', time: '10:22 AM' },
+    { user: 'Arjun', message: "Here's a helpful geometry video I found: [link]", time: '10:30 AM' }
+  ];
+
+  const communityMessages = document.getElementById('communityMessages');
+
+  function createMessage(user, text, time) {
+    const div = document.createElement('div');
+    div.className = 'flex items-start space-x-3';
+    const avatar = document.createElement('div');
+    avatar.className = 'w-10 h-10 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold uppercase';
+    avatar.textContent = user.charAt(0);
+    const content = document.createElement('div');
+    content.className = 'bg-gray-100 p-3 rounded-lg shadow max-w-xl';
+    const header = document.createElement('div');
+    header.className = 'flex justify-between text-sm font-semibold mb-1';
+    const username = document.createElement('span');
+    username.textContent = user;
+    const timestamp = document.createElement('span');
+    timestamp.className = 'text-gray-500';
+    timestamp.textContent = time;
+    header.appendChild(username);
+    header.appendChild(timestamp);
+    const messageText = document.createElement('p');
+    messageText.textContent = text;
+    content.appendChild(header);
+    content.appendChild(messageText);
+    div.appendChild(avatar);
+    div.appendChild(content);
+    return div;
+  }
+
+  function renderCommunityMessages() {
+    communityMessages.forEach(({ user, message, time }) => {
+      communityMessages.appendChild(createMessage(user, message, time));
+    });
+  }
+
+  communityMessagesData.forEach(({ user, message, time }) => {
+    const msgEl = createMessage(user, message, time);
+    communityMessages.appendChild(msgEl);
+  });
+
+  document.getElementById('communityForm').addEventListener('submit', e => {
+    e.preventDefault();
+    const input = document.getElementById('communityInput');
+    if (!input.value.trim()) return;
+    const now = new Date();
+    const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const newMsg = createMessage('You', input.value.trim(), timeStr);
+    communityMessages.appendChild(newMsg);
+    input.value = '';
+    communityMessages.scrollTop = communityMessages.scrollHeight;
+  });
+
+  // Connect Space setup
+  const usersData = [
+    { name: 'Priya Sharma', skills: ['Python Developer', 'AI'], email: 'priya@example.com', bio: 'AI enthusiast' },
+    { name: 'Rajesh', skills: ['Graphic Designer'], email: 'rajesh@example.com', bio: 'Artist' },
+    { name: 'Sneha', skills: ['Security Analyst'], email: 'sneha@example.com', bio: 'Cybersecurity expert' },
+    { name: 'Arjun', skills: ['Full-stack Developer'], email: 'arjun@example.com', bio: 'Web developer' }
+  ];
+
+  const userFilterName = document.getElementById('userFilterName');
+  const userFilterSkill = document.getElementById('userFilterSkill');
+  const usersList = document.getElementById('usersList');
+
+  function renderUsers() {
+    usersList.innerHTML = '';
+    const nameFilter = userFilterName.value.toLowerCase();
+    const skillFilter = userFilterSkill.value;
+    const filtered = usersData.filter(user => 
+      user.name.toLowerCase().includes(nameFilter) && 
+      (skillFilter === '' || user.skills.includes(skillFilter))
+    );
+
+    if (filtered.length === 0) {
+      usersList.innerHTML = '<p class="text-center text-gray-500 italic">No users found.</p>';
+      return;
+    }
+
+    filtered.forEach(user => {
+      const div = document.createElement('div');
+      div.className = 'bg-white p-4 rounded-lg shadow cursor-pointer';
+      div.innerHTML = `
+        <h4 class="font-semibold mb-2">${user.name}</h4>
+        <p><strong>Skills:</strong> ${user.skills.join(', ')}</p>
+        <p><strong>Email:</strong> ${user.email}</p>
+        <p class="italic">${user.bio}</p>
+      `;
+      usersList.appendChild(div);
+    });
+  }
+
+  userFilterName.addEventListener('input', renderUsers);
+  userFilterSkill.addEventListener('change', renderUsers);
+  renderUsers();
+
+  // Profile Section setup
+  const profileForm = document.getElementById('profileForm');
+  profileForm.addEventListener('submit', e => {
+    e.preventDefault();
+    const prof = {
+      name: profileForm.querySelector('#profileName').value,
+      email: profileForm.querySelector('#profileEmail').value,
+      bio: profileForm.querySelector('#profileBio').value
+    };
+    localStorage.setItem('eduProfile', JSON.stringify(prof));
+    alert('Profile saved!');
+    updateAISuggestions();
+  });
+
+  function loadProfile() {
+    const prof = JSON.parse(localStorage.getItem('eduProfile') || '{}');
+    if (prof.name) profileForm.querySelector('#profileName').value = prof.name;
+    if (prof.email) profileForm.querySelector('#profileEmail').value = prof.email;
+    if (prof.bio) profileForm.querySelector('#profileBio').value = prof.bio;
+    updateAISuggestions();
+  }
+
+  function updateAISuggestions() {
+    const name = profileForm.querySelector('#profileName').value || 'Student';
+    document.getElementById('aiSuggestions').textContent = `Hello ${name}, keep up the good work!`;
+  }
+
+  loadProfile();
+
+  // Profile progress chart
+  const profileCtx = document.getElementById('profileProgressChart').getContext('2d');
+  new Chart(profileCtx, {
+    type: 'line',
+    data: {
+      labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+      datasets: [{
+        label: 'Study Hours',
+        data: [2, 3, 2, 4, 5, 3, 4],
+        backgroundColor: 'rgba(99, 102, 241, 0.2)',
+        borderColor: 'rgba(99, 102, 241, 1)',
+        fill: true,
+        tension: 0.3,
+        pointRadius: 4
+      }]
+    },
+    options: {
+      responsive: true,
+      scales: {
+        y: { beginAtZero: true, max: 6 }
+      }
+    }
+  });
+
+  // Certificates
+  const certificates = [
+    { title: 'Python Certificate', date: '2024-01-15', grade: 'A' },
+    { title: 'Web Development', date: '2024-02-20', grade: 'A+' }
+  ];
+  const certificatesList = document.getElementById('certificatesList');
+  certificates.forEach(cert => {
+    const div = document.createElement('div');
+    div.className = 'p-3 border rounded bg-gray-100';
+    div.innerHTML = `<strong>${cert.title}</strong><br>Issued: ${cert.date}<br>Grade: ${cert.grade}`;
+    certificatesList.appendChild(div);
+  });
+
+</script>
+
+</body>
+</html>
